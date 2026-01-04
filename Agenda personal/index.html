@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Personal Trainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sonner@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: white;
+        }
+        
+        .container-main {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            border-right: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.closed {
+            width: 0;
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(to right, #1f2937, #0d9488);
+            color: white;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .sidebar-header p {
+            font-size: 14px;
+            color: #7dd3c0;
+        }
+        
+        .sidebar-content {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #0d9488;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+        
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        
+        .color-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-btn.selected {
+            box-shadow: 0 0 0 2px #e2e8f0, 0 0 0 4px #94a3b8;
+            transform: scale(1.15);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #0d9488;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0f766e;
+            box-shadow: 0 10px 15px rgba(13, 148, 136, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        .btn-secondary:hover {
+            background: #f3f4f6;
+        }
+        
+        .alunas-list {
+            margin-top: 32px;
+        }
+        
+        .alunas-list h2 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+        
+        .aluna-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid;
+            transition: all 0.2s;
+            cursor: move;
+        }
+        
+        .aluna-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .aluna-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .aluna-name {
+            font-weight: 600;
+            color: #111827;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .aluna-phone {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        
+        .aluna-actions {
+            display: flex;
+            gap: 4px;
+            margin-left: 8px;
+        }
+        
+        .btn-icon {
+            padding: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+        
+        .btn-icon:hover {
+            color: #0d9488;
+            background: #d1fae5;
+        }
+        
+        .btn-icon.delete:hover {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            background: #f9fafb;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #1f2937, #0d9488);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-btn {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header-title h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .header-title p {
+            font-size: 14px;
+            color: #7dd3c0;
+        }
+        
+        .schedule-container {
+            flex: 1;
+            overflow: auto;
+            padding: 24px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        }
+        
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            min-width: max-content;
+        }
+        
+        .day-column {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .day-column:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .day-header {
+            background: linear-gradient(to right, #1f2937, #0d9488);
+            color: white;
+            padding: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .day-slots {
+            padding: 8px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .time-slot {
+            padding: 12px;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            min-height: 60px;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: #f9fafb;
+        }
+        
+        .time-slot:hover {
+            border-color: #0d9488;
+            background: #f0fdfa;
+        }
+        
+        .time-slot.occupied {
+            border-style: solid;
+            background: transparent;
+        }
+        
+        .time-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .aluna-card {
+            padding: 8px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            group: true;
+            transition: all 0.2s;
+        }
+        
+        .aluna-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .aluna-card span {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .remove-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 2px 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 16px;
+        }
+        
+        .aluna-card:hover .remove-btn {
+            opacity: 1;
+        }
+        
+        .remove-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .empty-text {
+            font-size: 12px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.success {
+            background: #10b981;
+        }
+        
+        .toast.error {
+            background: #ef4444;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                z-index: 100;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>Agenda PT</h1>
+                <p>Gestão de alunas</p>
+            </div>
+            
+            <div class="sidebar-content">
+                <!-- Form -->
+                <div class="form-group">
+                    <label>Nome da Aluna</label>
+                    <input type="text" id="nomeAluna" placeholder="Digite o nome">
+                </div>
+                
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" id="telefoneAluna" placeholder="(11) 99999-9999">
+                </div>
+                
+                <div class="form-group">
+                    <label>Cor do Card</label>
+                    <div class="color-picker" id="colorPicker"></div>
+                </div>
+                
+                <button class="btn btn-primary" id="btnAdicionar">
+                    <span>➕</span> Adicionar Aluna
+                </button>
+                
+                <button class="btn btn-secondary" id="btnCancelar" style="display: none;">
+                    Cancelar
+                </button>
+                
+                <!-- Alunas List -->
+                <div class="alunas-list">
+                    <h2>Alunas Cadastradas</h2>
+                    <div id="listaAlunas"></div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="btn btn-secondary" id="btnExportar">
+                    <span>📥</span> Exportar CSV
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="toggle-btn" id="toggleSidebar">☰</button>
+                <div class="header-title">
+                    <h2>Agenda Semanal</h2>
+                    <p>Semana atual</p>
+                </div>
+            </div>
+            
+            <!-- Schedule -->
+            <div class="schedule-container">
+                <div class="schedule-grid" id="scheduleGrid"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Cores disponíveis
+        const CORES = ['#1e3a8a', '#0d9488', '#dc2626', '#9333ea', '#f59e0b', '#06b6d4', '#8b5cf6', '#ec4899'];
+        const DIAS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+        const HORARIOS = [
+            '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+            '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+            '18:00', '19:00', '20:00', '21:00', '22:00'
+        ];
+
+        // Estado
+        let alunas = [];
+        let agendamentos = [];
+        let alunaEmEdicao = null;
+        let draggedAluna = null;
+        let corSelecionada = 0;
+
+        // Elementos DOM
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const nomeInput = document.getElementById('nomeAluna');
+        const telefoneInput = document.getElementById('telefoneAluna');
+        const btnAdicionar = document.getElementById('btnAdicionar');
+        const btnCancelar = document.getElementById('btnCancelar');
+        const btnExportar = document.getElementById('btnExportar');
+        const listaAlunas = document.getElementById('listaAlunas');
+        const scheduleGrid = document.getElementById('scheduleGrid');
+        const colorPicker = document.getElementById('colorPicker');
+
+        // Inicializar
+        function init() {
+            carregarDados();
+            criarColorPicker();
+            renderizarAlunas();
+            renderizarAgenda();
+            
+            // Event listeners
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('closed');
+            });
+            
+            btnAdicionar.addEventListener('click', adicionarAluna);
+            btnCancelar.addEventListener('click', cancelarEdicao);
+            btnExportar.addEventListener('click', exportarAgenda);
+            
+            nomeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') adicionarAluna();
+            });
+        }
+
+        function criarColorPicker() {
+            CORES.forEach((cor, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'color-btn';
+                btn.style.backgroundColor = cor;
+                if (idx === 0) btn.classList.add('selected');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    corSelecionada = idx;
+                });
+                colorPicker.appendChild(btn);
+            });
+        }
+
+        function carregarDados() {
+            const alunasSalvas = localStorage.getItem('alunas');
+            const agendamentosSalvos = localStorage.getItem('agendamentos');
+            
+            if (alunasSalvas) alunas = JSON.parse(alunasSalvas);
+            if (agendamentosSalvos) agendamentos = JSON.parse(agendamentosSalvos);
+        }
+
+        function salvarDados() {
+            localStorage.setItem('alunas', JSON.stringify(alunas));
+            localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
+        }
+
+        function adicionarAluna() {
+            const nome = nomeInput.value.trim();
+            if (!nome) {
+                mostrarToast('Digite o nome da aluna', 'error');
+                return;
+            }
+
+            const aluna = {
+                id: Date.now(),
+                nome: nome,
+                telefone: telefoneInput.value,
+                cor: CORES[corSelecionada]
+            };
+
+            if (alunaEmEdicao) {
+                const idx = alunas.findIndex(a => a.id === alunaEmEdicao.id);
+                alunas[idx] = aluna;
+                alunaEmEdicao = null;
+                mostrarToast('Aluna atualizada com sucesso!', 'success');
+            } else {
+                alunas.push(aluna);
+                mostrarToast(`${aluna.nome} adicionada com sucesso!`, 'success');
+            }
+
+            salvarDados();
+            nomeInput.value = '';
+            telefoneInput.value = '';
+            corSelecionada = 0;
+            btnCancelar.style.display = 'none';
+            btnAdicionar.textContent = '➕ Adicionar Aluna';
+            renderizarAlunas();
+        }
+
+        function cancelarEdicao() {
+            alunaEmEdicao = null;
+            nomeInput.value = '';
+            telefoneInput.value = '';
+            corSelecionada = 0;
+            btnCancelar.style.display = 'none';
+            btnAdicionar.textContent = '➕ Adicionar Aluna';
+        }
+
+        function editarAluna(aluna) {
+            alunaEmEdicao = aluna;
+            nomeInput.value = aluna.nome;
+            telefoneInput.value = aluna.telefone;
+            corSelecionada = CORES.indexOf(aluna.cor);
+            document.querySelectorAll('.color-btn').forEach((btn, idx) => {
+                btn.classList.toggle('selected', idx === corSelecionada);
+            });
+            btnCancelar.style.display = 'flex';
+            btnAdicionar.textContent = '✏️ Atualizar Aluna';
+            nomeInput.focus();
+        }
+
+        function removerAluna(id) {
+            const aluna = alunas.find(a => a.id === id);
+            if (confirm(`Deseja remover ${aluna.nome}?`)) {
+                alunas = alunas.filter(a => a.id !== id);
+                agendamentos = agendamentos.filter(a => a.alunaId !== id);
+                salvarDados();
+                renderizarAlunas();
+                renderizarAgenda();
+                mostrarToast('Aluna removida com sucesso!', 'success');
+            }
+        }
+
+        function renderizarAlunas() {
+            listaAlunas.innerHTML = '';
+            
+            if (alunas.length === 0) {
+                listaAlunas.innerHTML = '<p class="empty-text">Nenhuma aluna cadastrada</p>';
+                return;
+            }
+
+            alunas.forEach(aluna => {
+                const item = document.createElement('div');
+                item.className = 'aluna-item';
+                item.style.borderLeftColor = aluna.cor;
+                item.draggable = true;
+                
+                item.innerHTML = `
+                    <div class="aluna-info">
+                        <div class="aluna-name">${aluna.nome}</div>
+                        <div class="aluna-phone">${aluna.telefone || 'Sem telefone'}</div>
+                    </div>
+                    <div class="aluna-actions">
+                        <button class="btn-icon" title="Editar">✏️</button>
+                        <button class="btn-icon delete" title="Remover">🗑️</button>
+                    </div>
+                `;
+                
+                item.querySelector('.btn-icon').addEventListener('click', () => editarAluna(aluna));
+                item.querySelector('.btn-icon.delete').addEventListener('click', () => removerAluna(aluna.id));
+                
+                item.addEventListener('dragstart', () => {
+                    draggedAluna = aluna;
+                });
+                
+                listaAlunas.appendChild(item);
+            });
+        }
+
+        function renderizarAgenda() {
+            scheduleGrid.innerHTML = '';
+            
+            DIAS.forEach(dia => {
+                const coluna = document.createElement('div');
+                coluna.className = 'day-column';
+                
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = dia;
+                coluna.appendChild(header);
+                
+                const slots = document.createElement('div');
+                slots.className = 'day-slots';
+                
+                HORARIOS.forEach(horario => {
+                    const slot = document.createElement('div');
+                    slot.className = 'time-slot';
+                    
+                    const label = document.createElement('div');
+                    label.className = 'time-label';
+                    label.textContent = horario;
+                    slot.appendChild(label);
+                    
+                    const aluna = obterAlunaAgendada(dia, horario);
+                    
+                    if (aluna) {
+                        slot.classList.add('occupied');
+                        slot.style.backgroundColor = aluna.cor + '15';
+                        slot.style.borderColor = aluna.cor;
+                        
+                        const card = document.createElement('div');
+                        card.className = 'aluna-card';
+                        card.style.backgroundColor = aluna.cor;
+                        
+                        const span = document.createElement('span');
+                        span.textContent = aluna.nome;
+                        card.appendChild(span);
+                        
+                        const btn = document.createElement('button');
+                        btn.className = 'remove-btn';
+                        btn.textContent = '✕';
+                        btn.addEventListener('click', () => {
+                            desagendar(aluna.id, dia, horario);
+                            mostrarToast('Agendamento removido!', 'success');
+                            renderizarAgenda();
+                        });
+                        card.appendChild(btn);
+                        
+                        slot.appendChild(card);
+                    } else {
+                        const empty = document.createElement('div');
+                        empty.className = 'empty-text';
+                        empty.textContent = 'Vazio';
+                        slot.appendChild(empty);
+                    }
+                    
+                    slot.addEventListener('dragover', (e) => e.preventDefault());
+                    slot.addEventListener('drop', () => {
+                        if (draggedAluna) {
+                            agendar(draggedAluna.id, dia, horario);
+                            mostrarToast(`${draggedAluna.nome} agendada às ${horario}!`, 'success');
+                            renderizarAgenda();
+                            draggedAluna = null;
+                        }
+                    });
+                    
+                    slots.appendChild(slot);
+                });
+                
+                coluna.appendChild(slots);
+                scheduleGrid.appendChild(coluna);
+            });
+        }
+
+        function obterAlunaAgendada(dia, horario) {
+            const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
+            if (!agendamento) return null;
+            return alunas.find(a => a.id === agendamento.alunaId);
+        }
+
+        function agendar(alunaId, dia, horario) {
+            const jaAgendada = agendamentos.some(
+                a => a.alunaId === alunaId && a.dia === dia && a.horario === horario
+            );
+            
+            if (!jaAgendada) {
+                agendamentos.push({ alunaId, dia, horario });
+                salvarDados();
+            }
+        }
+
+        function desagendar(alunaId, dia, horario) {
+            agendamentos = agendamentos.filter(
+                a => !(a.alunaId === alunaId && a.dia === dia && a.horario === horario)
+            );
+            salvarDados();
+        }
+
+        function exportarAgenda() {
+            let csv = 'Dia,Horário,Aluna,Telefone\n';
+            let total = 0;
+            
+            DIAS.forEach(dia => {
+                HORARIOS.forEach(horario => {
+                    const aluna = obterAlunaAgendada(dia, horario);
+                    if (aluna) {
+                        csv += `${dia},${horario},"${aluna.nome}","${aluna.telefone}"\n`;
+                        total++;
+                    }
+                });
+            });
+            
+            if (total === 0) {
+                mostrarToast('Nenhum agendamento para exportar', 'error');
+                return;
+            }
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `agenda-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            mostrarToast(`Agenda exportada com ${total} agendamentos!`, 'success');
+        }
+
+        function mostrarToast(mensagem, tipo) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.textContent = mensagem;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Iniciar
+        init();
+    </script>
+</body>
+</html>
