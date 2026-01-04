@@ -16,11 +16,13 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: white;
+            overflow-x: hidden;
         }
         
         .container-main {
             display: flex;
             height: 100vh;
+            position: relative;
         }
         
         .sidebar {
@@ -30,11 +32,12 @@
             overflow-y: auto;
             border-right: 1px solid #e2e8f0;
             transition: all 0.3s ease;
+            z-index: 50;
         }
         
         .sidebar.closed {
             width: 0;
-            overflow: hidden;
+            transform: translateX(-100%);
         }
         
         .sidebar-header {
@@ -221,17 +224,12 @@
             background: #fee2e2;
         }
         
-        .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid #e2e8f0;
-            background: #f9fafb;
-        }
-        
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            width: 100%;
         }
         
         .header {
@@ -259,28 +257,22 @@
         }
         
         .header-title h2 {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .header-title p {
-            font-size: 14px;
-            color: #7dd3c0;
         }
         
         .schedule-container {
             flex: 1;
             overflow: auto;
-            padding: 24px;
+            padding: 16px;
             background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
         }
         
         .schedule-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-            min-width: max-content;
+            gap: 12px;
+            min-width: 800px;
         }
         
         .day-column {
@@ -289,237 +281,191 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
             overflow: hidden;
             border: 1px solid #e2e8f0;
-            transition: all 0.3s;
-        }
-        
-        .day-column:hover {
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transform: scale(1.02);
         }
         
         .day-header {
             background: linear-gradient(to right, #1f2937, #0d9488);
             color: white;
-            padding: 16px;
+            padding: 12px;
             font-weight: bold;
             text-align: center;
+            font-size: 14px;
         }
         
         .day-slots {
             padding: 8px;
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
         }
         
         .time-slot {
-            padding: 12px;
-            border: 2px dashed #d1d5db;
+            padding: 8px;
+            border: 1px dashed #d1d5db;
             border-radius: 8px;
             margin-bottom: 8px;
-            min-height: 60px;
+            min-height: 50px;
             transition: all 0.2s;
             cursor: pointer;
             background: #f9fafb;
-        }
-        
-        .time-slot:hover {
-            border-color: #0d9488;
-            background: #f0fdfa;
-        }
-        
-        .time-slot.occupied {
-            border-style: solid;
-            background: transparent;
+            position: relative;
         }
         
         .time-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #6b7280;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         
         .aluna-card {
-            padding: 8px;
+            padding: 6px;
             border-radius: 6px;
             color: white;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            group: true;
-            transition: all 0.2s;
-        }
-        
-        .aluna-card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        .aluna-card span {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .remove-btn {
-            background: none;
+            background: rgba(0,0,0,0.2);
             border: none;
             color: white;
             cursor: pointer;
-            padding: 2px 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-size: 16px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
         }
-        
-        .aluna-card:hover .remove-btn {
-            opacity: 1;
-        }
-        
-        .remove-btn:hover {
-            transform: scale(1.2);
-        }
-        
-        .empty-text {
-            font-size: 12px;
-            color: #9ca3af;
-            font-style: italic;
-        }
-        
+
         .toast {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 16px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             color: white;
-            font-size: 14px;
-            animation: slideIn 0.3s ease;
             z-index: 1000;
+            animation: slideIn 0.3s ease;
         }
-        
-        .toast.success {
-            background: #10b981;
-        }
-        
-        .toast.error {
-            background: #ef4444;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
+        .toast.success { background: #0d9488; }
+        .toast.error { background: #dc2626; }
+
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes slideOut { from { transform: translateX(0); } to { transform: translateX(100%); } }
+
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .sidebar {
                 position: absolute;
                 left: 0;
                 top: 0;
                 height: 100%;
-                z-index: 100;
+                width: 280px;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.2);
             }
             
-            .schedule-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .sidebar.closed {
+                transform: translateX(-100%);
+                width: 280px; /* Keep width for animation */
             }
+
+            .schedule-grid {
+                min-width: 1000px; /* Ensure horizontal scroll on mobile */
+            }
+            
+            .header-title h2 {
+                font-size: 16px;
+            }
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+
+        .sidebar:not(.closed) + .main-content .overlay {
+            display: block;
+        }
+        
+        @media (min-width: 769px) {
+            .overlay { display: none !important; }
         }
     </style>
 </head>
 <body>
     <div class="container-main">
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside id="sidebar" class="sidebar closed">
             <div class="sidebar-header">
-                <h1>Agenda PT</h1>
-                <p>Gestão de alunas</p>
+                <h1>Cadastro</h1>
+                <p>Gerencie suas alunas</p>
             </div>
-            
             <div class="sidebar-content">
-                <!-- Form -->
                 <div class="form-group">
                     <label>Nome da Aluna</label>
-                    <input type="text" id="nomeAluna" placeholder="Digite o nome">
+                    <input type="text" id="nomeAluna" placeholder="Ex: Maria Silva">
                 </div>
-                
                 <div class="form-group">
-                    <label>Telefone</label>
-                    <input type="tel" id="telefoneAluna" placeholder="(11) 99999-9999">
+                    <label>Telefone (Opcional)</label>
+                    <input type="text" id="telefoneAluna" placeholder="(00) 00000-0000">
                 </div>
-                
                 <div class="form-group">
-                    <label>Cor do Card</label>
-                    <div class="color-picker" id="colorPicker"></div>
+                    <label>Cor de Identificação</label>
+                    <div id="colorPicker" class="color-picker"></div>
                 </div>
+                <button id="btnAdicionar" class="btn btn-primary">➕ Adicionar Aluna</button>
+                <button id="btnCancelar" class="btn btn-secondary mt-2" style="display: none;">❌ Cancelar</button>
                 
-                <button class="btn btn-primary" id="btnAdicionar">
-                    <span>➕</span> Adicionar Aluna
-                </button>
-                
-                <button class="btn btn-secondary" id="btnCancelar" style="display: none;">
-                    Cancelar
-                </button>
-                
-                <!-- Alunas List -->
                 <div class="alunas-list">
-                    <h2>Alunas Cadastradas</h2>
+                    <h2>Minhas Alunas</h2>
                     <div id="listaAlunas"></div>
                 </div>
             </div>
-            
-            <div class="sidebar-footer">
-                <button class="btn btn-secondary" id="btnExportar">
-                    <span>📥</span> Exportar CSV
-                </button>
-            </div>
         </aside>
-        
+
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
-            <div class="header">
-                <button class="toggle-btn" id="toggleSidebar">☰</button>
+            <div id="overlay" class="overlay"></div>
+            <header class="header">
+                <button id="toggleSidebar" class="toggle-btn">☰</button>
                 <div class="header-title">
-                    <h2>Agenda Semanal</h2>
-                    <p>Semana atual</p>
+                    <h2>Agenda Personal Trainer</h2>
                 </div>
-            </div>
-            
-            <!-- Schedule -->
+                <div class="ml-auto flex gap-2">
+                    <button id="btnExportar" class="btn btn-secondary py-1 px-3 text-xs">📥 Exportar</button>
+                </div>
+            </header>
+
             <div class="schedule-container">
-                <div class="schedule-grid" id="scheduleGrid"></div>
+                <div id="scheduleGrid" class="schedule-grid">
+                    <!-- Gerado via JS -->
+                </div>
             </div>
         </main>
     </div>
 
     <script>
-        // Cores disponíveis
         const CORES = ['#1e3a8a', '#0d9488', '#dc2626', '#9333ea', '#f59e0b', '#06b6d4', '#8b5cf6', '#ec4899'];
         const DIAS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-        const HORARIOS = [
-            '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
-            '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
-            '18:00', '19:00', '20:00', '21:00', '22:00'
-        ];
+        const HORARIOS = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
 
-        // Estado
         let alunas = [];
         let agendamentos = [];
         let alunaEmEdicao = null;
         let draggedAluna = null;
         let corSelecionada = 0;
 
-        // Elementos DOM
         const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
         const toggleBtn = document.getElementById('toggleSidebar');
         const nomeInput = document.getElementById('nomeAluna');
         const telefoneInput = document.getElementById('telefoneAluna');
@@ -530,25 +476,25 @@
         const scheduleGrid = document.getElementById('scheduleGrid');
         const colorPicker = document.getElementById('colorPicker');
 
-        // Inicializar
         function init() {
             carregarDados();
             criarColorPicker();
             renderizarAlunas();
             renderizarAgenda();
             
-            // Event listeners
             toggleBtn.addEventListener('click', () => {
                 sidebar.classList.toggle('closed');
+                overlay.style.display = sidebar.classList.contains('closed') ? 'none' : 'block';
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('closed');
+                overlay.style.display = 'none';
             });
             
             btnAdicionar.addEventListener('click', adicionarAluna);
             btnCancelar.addEventListener('click', cancelarEdicao);
             btnExportar.addEventListener('click', exportarAgenda);
-            
-            nomeInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') adicionarAluna();
-            });
         }
 
         function criarColorPicker() {
@@ -569,7 +515,6 @@
         function carregarDados() {
             const alunasSalvas = localStorage.getItem('alunas');
             const agendamentosSalvos = localStorage.getItem('agendamentos');
-            
             if (alunasSalvas) alunas = JSON.parse(alunasSalvas);
             if (agendamentosSalvos) agendamentos = JSON.parse(agendamentosSalvos);
         }
@@ -581,13 +526,10 @@
 
         function adicionarAluna() {
             const nome = nomeInput.value.trim();
-            if (!nome) {
-                mostrarToast('Digite o nome da aluna', 'error');
-                return;
-            }
+            if (!nome) return mostrarToast('Digite o nome', 'error');
 
             const aluna = {
-                id: Date.now(),
+                id: alunaEmEdicao ? alunaEmEdicao.id : Date.now(),
                 nome: nome,
                 telefone: telefoneInput.value,
                 cor: CORES[corSelecionada]
@@ -597,26 +539,21 @@
                 const idx = alunas.findIndex(a => a.id === alunaEmEdicao.id);
                 alunas[idx] = aluna;
                 alunaEmEdicao = null;
-                mostrarToast('Aluna atualizada com sucesso!', 'success');
             } else {
                 alunas.push(aluna);
-                mostrarToast(`${aluna.nome} adicionada com sucesso!`, 'success');
             }
 
             salvarDados();
-            nomeInput.value = '';
-            telefoneInput.value = '';
-            corSelecionada = 0;
-            btnCancelar.style.display = 'none';
-            btnAdicionar.textContent = '➕ Adicionar Aluna';
+            cancelarEdicao();
             renderizarAlunas();
+            renderizarAgenda();
+            mostrarToast('Salvo com sucesso!', 'success');
         }
 
         function cancelarEdicao() {
             alunaEmEdicao = null;
             nomeInput.value = '';
             telefoneInput.value = '';
-            corSelecionada = 0;
             btnCancelar.style.display = 'none';
             btnAdicionar.textContent = '➕ Adicionar Aluna';
         }
@@ -629,199 +566,142 @@
             document.querySelectorAll('.color-btn').forEach((btn, idx) => {
                 btn.classList.toggle('selected', idx === corSelecionada);
             });
-            btnCancelar.style.display = 'flex';
-            btnAdicionar.textContent = '✏️ Atualizar Aluna';
-            nomeInput.focus();
+            btnCancelar.style.display = 'block';
+            btnAdicionar.textContent = '✏️ Atualizar';
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('closed');
+                overlay.style.display = 'block';
+            }
         }
 
         function removerAluna(id) {
-            const aluna = alunas.find(a => a.id === id);
-            if (confirm(`Deseja remover ${aluna.nome}?`)) {
+            if (confirm('Remover aluna?')) {
                 alunas = alunas.filter(a => a.id !== id);
                 agendamentos = agendamentos.filter(a => a.alunaId !== id);
                 salvarDados();
                 renderizarAlunas();
                 renderizarAgenda();
-                mostrarToast('Aluna removida com sucesso!', 'success');
             }
         }
 
         function renderizarAlunas() {
-            listaAlunas.innerHTML = '';
-            
-            if (alunas.length === 0) {
-                listaAlunas.innerHTML = '<p class="empty-text">Nenhuma aluna cadastrada</p>';
-                return;
-            }
-
+            listaAlunas.innerHTML = alunas.length ? '' : '<p class="text-xs text-gray-400">Nenhuma aluna</p>';
             alunas.forEach(aluna => {
                 const item = document.createElement('div');
                 item.className = 'aluna-item';
                 item.style.borderLeftColor = aluna.cor;
                 item.draggable = true;
-                
                 item.innerHTML = `
                     <div class="aluna-info">
                         <div class="aluna-name">${aluna.nome}</div>
-                        <div class="aluna-phone">${aluna.telefone || 'Sem telefone'}</div>
                     </div>
                     <div class="aluna-actions">
-                        <button class="btn-icon" title="Editar">✏️</button>
-                        <button class="btn-icon delete" title="Remover">🗑️</button>
+                        <button onclick="event.stopPropagation();" class="edit-btn">✏️</button>
+                        <button onclick="event.stopPropagation();" class="del-btn">🗑️</button>
                     </div>
                 `;
-                
-                item.querySelector('.btn-icon').addEventListener('click', () => editarAluna(aluna));
-                item.querySelector('.btn-icon.delete').addEventListener('click', () => removerAluna(aluna.id));
-                
-                item.addEventListener('dragstart', () => {
-                    draggedAluna = aluna;
+                item.querySelector('.edit-btn').onclick = () => editarAluna(aluna);
+                item.querySelector('.del-btn').onclick = () => removerAluna(aluna.id);
+                item.addEventListener('dragstart', () => draggedAluna = aluna);
+                // Touch support for mobile
+                item.addEventListener('click', () => {
+                    if(window.innerWidth <= 768) {
+                        // On mobile, clicking selects for next slot click
+                        draggedAluna = aluna;
+                        mostrarToast(`Selecionada: ${aluna.nome}. Toque num horário.`, 'success');
+                    }
                 });
-                
                 listaAlunas.appendChild(item);
             });
         }
 
         function renderizarAgenda() {
             scheduleGrid.innerHTML = '';
-            
             DIAS.forEach(dia => {
                 const coluna = document.createElement('div');
                 coluna.className = 'day-column';
-                
-                const header = document.createElement('div');
-                header.className = 'day-header';
-                header.textContent = dia;
-                coluna.appendChild(header);
-                
-                const slots = document.createElement('div');
-                slots.className = 'day-slots';
+                coluna.innerHTML = `<div class="day-header">${dia}</div><div class="day-slots"></div>`;
+                const slotsDiv = coluna.querySelector('.day-slots');
                 
                 HORARIOS.forEach(horario => {
                     const slot = document.createElement('div');
                     slot.className = 'time-slot';
+                    slot.innerHTML = `<div class="time-label">${horario}</div>`;
                     
-                    const label = document.createElement('div');
-                    label.className = 'time-label';
-                    label.textContent = horario;
-                    slot.appendChild(label);
-                    
-                    const aluna = obterAlunaAgendada(dia, horario);
+                    const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
+                    const aluna = agendamento ? alunas.find(a => a.id === agendamento.alunaId) : null;
                     
                     if (aluna) {
                         slot.classList.add('occupied');
                         slot.style.backgroundColor = aluna.cor + '15';
                         slot.style.borderColor = aluna.cor;
-                        
-                        const card = document.createElement('div');
-                        card.className = 'aluna-card';
-                        card.style.backgroundColor = aluna.cor;
-                        
-                        const span = document.createElement('span');
-                        span.textContent = aluna.nome;
-                        card.appendChild(span);
-                        
-                        const btn = document.createElement('button');
-                        btn.className = 'remove-btn';
-                        btn.textContent = '✕';
-                        btn.addEventListener('click', () => {
-                            desagendar(aluna.id, dia, horario);
-                            mostrarToast('Agendamento removido!', 'success');
+                        slot.innerHTML += `
+                            <div class="aluna-card" style="background-color: ${aluna.cor}">
+                                <span>${aluna.nome}</span>
+                                <button class="remove-btn">✕</button>
+                            </div>
+                        `;
+                        slot.querySelector('.remove-btn').onclick = (e) => {
+                            e.stopPropagation();
+                            agendamentos = agendamentos.filter(a => !(a.dia === dia && a.horario === horario));
+                            salvarDados();
                             renderizarAgenda();
-                        });
-                        card.appendChild(btn);
-                        
-                        slot.appendChild(card);
-                    } else {
-                        const empty = document.createElement('div');
-                        empty.className = 'empty-text';
-                        empty.textContent = 'Vazio';
-                        slot.appendChild(empty);
+                        };
                     }
-                    
+
                     slot.addEventListener('dragover', (e) => e.preventDefault());
                     slot.addEventListener('drop', () => {
                         if (draggedAluna) {
-                            agendar(draggedAluna.id, dia, horario);
-                            mostrarToast(`${draggedAluna.nome} agendada às ${horario}!`, 'success');
+                            agendamentos = agendamentos.filter(a => !(a.dia === dia && a.horario === horario));
+                            agendamentos.push({ alunaId: draggedAluna.id, dia, horario });
+                            salvarDados();
                             renderizarAgenda();
                             draggedAluna = null;
                         }
                     });
                     
-                    slots.appendChild(slot);
+                    // Mobile click to schedule
+                    slot.addEventListener('click', () => {
+                        if (draggedAluna) {
+                            agendamentos = agendamentos.filter(a => !(a.dia === dia && a.horario === horario));
+                            agendamentos.push({ alunaId: draggedAluna.id, dia, horario });
+                            salvarDados();
+                            renderizarAgenda();
+                            draggedAluna = null;
+                        }
+                    });
+
+                    slotsDiv.appendChild(slot);
                 });
-                
-                coluna.appendChild(slots);
                 scheduleGrid.appendChild(coluna);
             });
         }
 
-        function obterAlunaAgendada(dia, horario) {
-            const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
-            if (!agendamento) return null;
-            return alunas.find(a => a.id === agendamento.alunaId);
-        }
-
-        function agendar(alunaId, dia, horario) {
-            const jaAgendada = agendamentos.some(
-                a => a.alunaId === alunaId && a.dia === dia && a.horario === horario
-            );
-            
-            if (!jaAgendada) {
-                agendamentos.push({ alunaId, dia, horario });
-                salvarDados();
-            }
-        }
-
-        function desagendar(alunaId, dia, horario) {
-            agendamentos = agendamentos.filter(
-                a => !(a.alunaId === alunaId && a.dia === dia && a.horario === horario)
-            );
-            salvarDados();
-        }
-
         function exportarAgenda() {
-            let csv = 'Dia,Horário,Aluna,Telefone\n';
-            let total = 0;
-            
-            DIAS.forEach(dia => {
-                HORARIOS.forEach(horario => {
-                    const aluna = obterAlunaAgendada(dia, horario);
-                    if (aluna) {
-                        csv += `${dia},${horario},"${aluna.nome}","${aluna.telefone}"\n`;
-                        total++;
-                    }
-                });
+            let csv = 'Dia,Horario,Aluna\n';
+            agendamentos.forEach(a => {
+                const aluna = alunas.find(al => al.id === a.alunaId);
+                if(aluna) csv += `${a.dia},${a.horario},${aluna.nome}\n`;
             });
-            
-            if (total === 0) {
-                mostrarToast('Nenhum agendamento para exportar', 'error');
-                return;
-            }
-            
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `agenda-${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = 'agenda.csv';
             a.click();
-            mostrarToast(`Agenda exportada com ${total} agendamentos!`, 'success');
         }
 
-        function mostrarToast(mensagem, tipo) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${tipo}`;
-            toast.textContent = mensagem;
-            document.body.appendChild(toast);
-            
+        function mostrarToast(msg, tipo) {
+            const t = document.createElement('div');
+            t.className = `toast ${tipo}`;
+            t.textContent = msg;
+            document.body.appendChild(t);
             setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+                t.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => t.remove(), 300);
+            }, 2000);
         }
 
-        // Iniciar
         init();
     </script>
 </body>
