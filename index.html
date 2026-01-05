@@ -929,7 +929,9 @@ card.querySelector('.whatsapp-btn').onclick = (e) => {
                         e.stopPropagation();
                         const tel = aluna.telefone ? aluna.telefone.replace(/\D/g, '') : '';
                         if(!tel) return mostrarToast('Aluna sem telefone!', 'error');
-                        const msg = encodeURIComponent(`Olá ${aluna.nome}, passando para lembrar da nossa aula de ${dia} às ${ag.horario}. Até lá! 🏋️‍♀️`);
+                        const msg = encodeURIComponent(`Olá, ${aluna.nome}! 🌹  
+                        Passando para lembrar da nossa aula de ${dia} às ${ag.horario}. 
+                        Podemos confirmar? 🏋️‍♀️`);
                         window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
                     };
 
