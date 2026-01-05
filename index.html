@@ -16,11 +16,13 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: white;
+            overflow-x: hidden;
         }
         
         .container-main {
             display: flex;
             height: 100vh;
+            position: relative;
         }
         
         .sidebar {
@@ -30,11 +32,12 @@
             overflow-y: auto;
             border-right: 1px solid #e2e8f0;
             transition: all 0.3s ease;
+            z-index: 50;
         }
         
         .sidebar.closed {
             width: 0;
-            overflow: hidden;
+            transform: translateX(-100%);
         }
         
         .sidebar-header {
@@ -232,6 +235,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            width: 100%;
         }
         
         .header {
@@ -280,7 +284,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 16px;
-            min-width: max-content;
+            min-width: 1000px;
         }
         
         .day-column {
@@ -316,10 +320,11 @@
             border: 2px dashed #d1d5db;
             border-radius: 8px;
             margin-bottom: 8px;
-            min-height: 60px;
+            min-height: 80px;
             transition: all 0.2s;
             cursor: pointer;
             background: #f9fafb;
+            position: relative;
         }
         
         .time-slot:hover {
@@ -347,9 +352,8 @@
             font-weight: 600;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            group: true;
+            flex-direction: column;
+            gap: 4px;
             transition: all 0.2s;
         }
         
@@ -358,168 +362,182 @@
         }
         
         .aluna-card span {
-            flex: 1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+
         .remove-btn {
-            background: none;
+            background: rgba(0,0,0,0.2);
             border: none;
             color: white;
             cursor: pointer;
-            padding: 2px 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-size: 16px;
-        }
-        
-        .aluna-card:hover .remove-btn {
-            opacity: 1;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            opacity: 0.8;
         }
         
         .remove-btn:hover {
-            transform: scale(1.2);
+            opacity: 1;
+            background: rgba(0,0,0,0.4);
         }
-        
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: bold;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128C7E;
+        }
+
         .empty-text {
             font-size: 12px;
             color: #9ca3af;
-            font-style: italic;
+            text-align: center;
+            margin-top: 8px;
         }
-        
+
         .toast {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 16px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             color: white;
-            font-size: 14px;
-            animation: slideIn 0.3s ease;
             z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        
-        .toast.success {
-            background: #10b981;
+        .toast.success { background: #0d9488; }
+        .toast.error { background: #dc2626; }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
         }
-        
-        .toast.error {
-            background: #ef4444;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
+
         @media (max-width: 768px) {
             .sidebar {
                 position: absolute;
                 left: 0;
                 top: 0;
                 height: 100%;
-                z-index: 100;
+                width: 280px;
             }
-            
-            .schedule-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .sidebar.closed {
+                transform: translateX(-100%);
+                width: 280px;
             }
+            .header-title h2 { font-size: 18px; }
+            .schedule-container { padding: 12px; }
         }
     </style>
 </head>
 <body>
     <div class="container-main">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside id="sidebar" class="sidebar closed">
             <div class="sidebar-header">
-                <h1>Agenda PT</h1>
-                <p>Gestão de alunas</p>
+                <h1>Cadastro</h1>
+                <p>Gerencie suas alunas</p>
             </div>
-            
             <div class="sidebar-content">
-                <!-- Form -->
                 <div class="form-group">
                     <label>Nome da Aluna</label>
-                    <input type="text" id="nomeAluna" placeholder="Digite o nome">
+                    <input type="text" id="nomeAluna" placeholder="Ex: Maria Silva">
                 </div>
-                
                 <div class="form-group">
-                    <label>Telefone</label>
-                    <input type="tel" id="telefoneAluna" placeholder="(11) 99999-9999">
+                    <label>Telefone (DDD + Número)</label>
+                    <input type="text" id="telefoneAluna" placeholder="5511999999999">
                 </div>
-                
                 <div class="form-group">
-                    <label>Cor do Card</label>
-                    <div class="color-picker" id="colorPicker"></div>
+                    <label>Cor de Identificação</label>
+                    <div id="colorPicker" class="color-picker"></div>
                 </div>
+                <button id="btnAdicionar" class="btn btn-primary">➕ Adicionar Aluna</button>
+                <button id="btnCancelar" class="btn btn-secondary mt-2" style="display: none;">❌ Cancelar Edição</button>
+                <button id="btnExportar" class="btn btn-secondary mt-4">📥 Exportar Agenda (CSV)</button>
                 
-                <button class="btn btn-primary" id="btnAdicionar">
-                    <span>➕</span> Adicionar Aluna
-                </button>
-                
-                <button class="btn btn-secondary" id="btnCancelar" style="display: none;">
-                    Cancelar
-                </button>
-                
-                <!-- Alunas List -->
                 <div class="alunas-list">
-                    <h2>Alunas Cadastradas</h2>
+                    <h2>Minhas Alunas</h2>
                     <div id="listaAlunas"></div>
                 </div>
             </div>
-            
-            <div class="sidebar-footer">
-                <button class="btn btn-secondary" id="btnExportar">
-                    <span>📥</span> Exportar CSV
-                </button>
-            </div>
         </aside>
-        
-        <!-- Main Content -->
+
         <main class="main-content">
-            <!-- Header -->
-            <div class="header">
-                <button class="toggle-btn" id="toggleSidebar">☰</button>
+            <div id="overlay" class="overlay"></div>
+            <header class="header">
+                <button id="toggleSidebar" class="toggle-btn">☰</button>
                 <div class="header-title">
-                    <h2>Agenda Semanal</h2>
-                    <p>Semana atual</p>
+                    <h2>Agenda Personal Trainer</h2>
+                    <p>Controle de horários e alunas</p>
                 </div>
-            </div>
-            
-            <!-- Schedule -->
+            </header>
+
             <div class="schedule-container">
-                <div class="schedule-grid" id="scheduleGrid"></div>
+                <div id="scheduleGrid" class="schedule-grid">
+                    <!-- Gerado via JS -->
+                </div>
             </div>
         </main>
     </div>
 
-    <script>
-        // Cores disponíveis
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaPY_nrtvkBeQiVOTkrCPQjg_469wPos4",
+            authDomain: "agendapersonal-930fe.firebaseapp.com",
+            projectId: "agendapersonal-930fe",
+            storageBucket: "agendapersonal-930fe.firebasestorage.app",
+            messagingSenderId: "467745034016",
+            appId: "1:467745034016:web:f5addc6218444d54b91145"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         const CORES = ['#1e3a8a', '#0d9488', '#dc2626', '#9333ea', '#f59e0b', '#06b6d4', '#8b5cf6', '#ec4899'];
         const DIAS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-        const HORARIOS = [
-            '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
-            '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
-            '18:00', '19:00', '20:00', '21:00', '22:00'
-        ];
+        const HORARIOS = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
 
-        // Estado
         let alunas = [];
         let agendamentos = [];
         let alunaEmEdicao = null;
         let draggedAluna = null;
+        let selectedAluna = null;
         let corSelecionada = 0;
 
-        // Elementos DOM
         const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
         const toggleBtn = document.getElementById('toggleSidebar');
         const nomeInput = document.getElementById('nomeAluna');
         const telefoneInput = document.getElementById('telefoneAluna');
@@ -530,16 +548,29 @@
         const scheduleGrid = document.getElementById('scheduleGrid');
         const colorPicker = document.getElementById('colorPicker');
 
-        // Inicializar
-        function init() {
-            carregarDados();
-            criarColorPicker();
+        // Sincronização em tempo real com Firebase
+        onSnapshot(collection(db, "alunas"), (snapshot) => {
+            alunas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderizarAlunas();
             renderizarAgenda();
+        });
+
+        onSnapshot(collection(db, "agendamentos"), (snapshot) => {
+            agendamentos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderizarAgenda();
+        });
+
+        function init() {
+            criarColorPicker();
             
-            // Event listeners
             toggleBtn.addEventListener('click', () => {
                 sidebar.classList.toggle('closed');
+                overlay.style.display = sidebar.classList.contains('closed') ? 'none' : 'block';
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('closed');
+                overlay.style.display = 'none';
             });
             
             btnAdicionar.addEventListener('click', adicionarAluna);
@@ -566,50 +597,38 @@
             });
         }
 
-        function carregarDados() {
-            const alunasSalvas = localStorage.getItem('alunas');
-            const agendamentosSalvos = localStorage.getItem('agendamentos');
-            
-            if (alunasSalvas) alunas = JSON.parse(alunasSalvas);
-            if (agendamentosSalvos) agendamentos = JSON.parse(agendamentosSalvos);
-        }
-
-        function salvarDados() {
-            localStorage.setItem('alunas', JSON.stringify(alunas));
-            localStorage.setItem('agendamentos', JSON.stringify(agendamentos));
-        }
-
-        function adicionarAluna() {
+        async function adicionarAluna() {
             const nome = nomeInput.value.trim();
             if (!nome) {
                 mostrarToast('Digite o nome da aluna', 'error');
                 return;
             }
 
-            const aluna = {
-                id: Date.now(),
+            const dados = {
                 nome: nome,
                 telefone: telefoneInput.value,
                 cor: CORES[corSelecionada]
             };
 
-            if (alunaEmEdicao) {
-                const idx = alunas.findIndex(a => a.id === alunaEmEdicao.id);
-                alunas[idx] = aluna;
-                alunaEmEdicao = null;
-                mostrarToast('Aluna atualizada com sucesso!', 'success');
-            } else {
-                alunas.push(aluna);
-                mostrarToast(`${aluna.nome} adicionada com sucesso!`, 'success');
-            }
+            try {
+                if (alunaEmEdicao) {
+                    await updateDoc(doc(db, "alunas", alunaEmEdicao.id), dados);
+                    alunaEmEdicao = null;
+                    mostrarToast('Aluna atualizada!', 'success');
+                } else {
+                    await addDoc(collection(db, "alunas"), dados);
+                    mostrarToast('Aluna adicionada!', 'success');
+                }
 
-            salvarDados();
-            nomeInput.value = '';
-            telefoneInput.value = '';
-            corSelecionada = 0;
-            btnCancelar.style.display = 'none';
-            btnAdicionar.textContent = '➕ Adicionar Aluna';
-            renderizarAlunas();
+                nomeInput.value = '';
+                telefoneInput.value = '';
+                corSelecionada = 0;
+                btnCancelar.style.display = 'none';
+                btnAdicionar.textContent = '➕ Adicionar Aluna';
+                document.querySelectorAll('.color-btn').forEach((b, i) => b.classList.toggle('selected', i === 0));
+            } catch (e) {
+                mostrarToast('Erro ao salvar!', 'error');
+            }
         }
 
         function cancelarEdicao() {
@@ -624,31 +643,36 @@
         function editarAluna(aluna) {
             alunaEmEdicao = aluna;
             nomeInput.value = aluna.nome;
-            telefoneInput.value = aluna.telefone;
+            telefoneInput.value = aluna.telefone || '';
             corSelecionada = CORES.indexOf(aluna.cor);
             document.querySelectorAll('.color-btn').forEach((btn, idx) => {
                 btn.classList.toggle('selected', idx === corSelecionada);
             });
             btnCancelar.style.display = 'flex';
             btnAdicionar.textContent = '✏️ Atualizar Aluna';
+            sidebar.classList.remove('closed');
+            overlay.style.display = 'block';
             nomeInput.focus();
         }
 
-        function removerAluna(id) {
-            const aluna = alunas.find(a => a.id === id);
-            if (confirm(`Deseja remover ${aluna.nome}?`)) {
-                alunas = alunas.filter(a => a.id !== id);
-                agendamentos = agendamentos.filter(a => a.alunaId !== id);
-                salvarDados();
-                renderizarAlunas();
-                renderizarAgenda();
-                mostrarToast('Aluna removida com sucesso!', 'success');
+        async function removerAluna(id) {
+            if (confirm(`Deseja remover esta aluna? Todos os agendamentos dela também serão excluídos.`)) {
+                try {
+                    await deleteDoc(doc(db, "alunas", id));
+                    // Remover agendamentos vinculados
+                    const vinculados = agendamentos.filter(a => a.alunaId === id);
+                    for (const v of vinculados) {
+                        await deleteDoc(doc(db, "agendamentos", v.id));
+                    }
+                    mostrarToast('Aluna removida!', 'success');
+                } catch (e) {
+                    mostrarToast('Erro ao remover!', 'error');
+                }
             }
         }
 
         function renderizarAlunas() {
             listaAlunas.innerHTML = '';
-            
             if (alunas.length === 0) {
                 listaAlunas.innerHTML = '<p class="empty-text">Nenhuma aluna cadastrada</p>';
                 return;
@@ -656,7 +680,7 @@
 
             alunas.forEach(aluna => {
                 const item = document.createElement('div');
-                item.className = 'aluna-item';
+                item.className = `aluna-item ${selectedAluna?.id === aluna.id ? 'ring-2 ring-teal-500' : ''}`;
                 item.style.borderLeftColor = aluna.cor;
                 item.draggable = true;
                 
@@ -666,16 +690,26 @@
                         <div class="aluna-phone">${aluna.telefone || 'Sem telefone'}</div>
                     </div>
                     <div class="aluna-actions">
-                        <button class="btn-icon" title="Editar">✏️</button>
+                        <button class="btn-icon edit" title="Editar">✏️</button>
                         <button class="btn-icon delete" title="Remover">🗑️</button>
                     </div>
                 `;
                 
-                item.querySelector('.btn-icon').addEventListener('click', () => editarAluna(aluna));
-                item.querySelector('.btn-icon.delete').addEventListener('click', () => removerAluna(aluna.id));
+                item.querySelector('.edit').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    editarAluna(aluna);
+                });
+                item.querySelector('.delete').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removerAluna(aluna.id);
+                });
                 
-                item.addEventListener('dragstart', () => {
-                    draggedAluna = aluna;
+                item.addEventListener('dragstart', () => draggedAluna = aluna);
+                
+                item.addEventListener('click', () => {
+                    selectedAluna = aluna;
+                    mostrarToast(`Selecionada: ${aluna.nome}. Toque num horário.`, 'success');
+                    renderizarAlunas();
                 });
                 
                 listaAlunas.appendChild(item);
@@ -684,29 +718,19 @@
 
         function renderizarAgenda() {
             scheduleGrid.innerHTML = '';
-            
             DIAS.forEach(dia => {
                 const coluna = document.createElement('div');
                 coluna.className = 'day-column';
-                
-                const header = document.createElement('div');
-                header.className = 'day-header';
-                header.textContent = dia;
-                coluna.appendChild(header);
-                
-                const slots = document.createElement('div');
-                slots.className = 'day-slots';
+                coluna.innerHTML = `<div class="day-header">${dia}</div><div class="day-slots"></div>`;
+                const slotsDiv = coluna.querySelector('.day-slots');
                 
                 HORARIOS.forEach(horario => {
                     const slot = document.createElement('div');
                     slot.className = 'time-slot';
+                    slot.innerHTML = `<div class="time-label">${horario}</div>`;
                     
-                    const label = document.createElement('div');
-                    label.className = 'time-label';
-                    label.textContent = horario;
-                    slot.appendChild(label);
-                    
-                    const aluna = obterAlunaAgendada(dia, horario);
+                    const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
+                    const aluna = agendamento ? alunas.find(a => a.id === agendamento.alunaId) : null;
                     
                     if (aluna) {
                         slot.classList.add('occupied');
@@ -716,69 +740,64 @@
                         const card = document.createElement('div');
                         card.className = 'aluna-card';
                         card.style.backgroundColor = aluna.cor;
+                        card.innerHTML = `
+                            <span>${aluna.nome}</span>
+                            <div class="card-actions">
+                                <button class="whatsapp-btn" title="Enviar Lembrete">
+                                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.319 1.592 5.448 0 9.886-4.438 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.735-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                                    Avisar
+                                </button>
+                                <button class="remove-btn">✕</button>
+                            </div>
+                        `;
                         
-                        const span = document.createElement('span');
-                        span.textContent = aluna.nome;
-                        card.appendChild(span);
-                        
-                        const btn = document.createElement('button');
-                        btn.className = 'remove-btn';
-                        btn.textContent = '✕';
-                        btn.addEventListener('click', () => {
-                            desagendar(aluna.id, dia, horario);
+                        card.querySelector('.remove-btn').onclick = async (e) => {
+                            e.stopPropagation();
+                            await deleteDoc(doc(db, "agendamentos", agendamento.id));
                             mostrarToast('Agendamento removido!', 'success');
-                            renderizarAgenda();
-                        });
-                        card.appendChild(btn);
+                        };
+                        
+                        card.querySelector('.whatsapp-btn').onclick = (e) => {
+                            e.stopPropagation();
+                            const tel = aluna.telefone ? aluna.telefone.replace(/\D/g, '') : '';
+                            if(!tel) return mostrarToast('Aluna sem telefone!', 'error');
+                            const msg = encodeURIComponent(`Olá ${aluna.nome}, passando para lembrar da nossa aula de ${dia} às ${horario}. Até lá! 🏋️‍♀️`);
+                            window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
+                        };
                         
                         slot.appendChild(card);
                     } else {
-                        const empty = document.createElement('div');
-                        empty.className = 'empty-text';
-                        empty.textContent = 'Vazio';
-                        slot.appendChild(empty);
+                        slot.innerHTML += '<div class="empty-text">Vazio</div>';
                     }
-                    
+
                     slot.addEventListener('dragover', (e) => e.preventDefault());
-                    slot.addEventListener('drop', () => {
+                    slot.addEventListener('drop', async () => {
                         if (draggedAluna) {
-                            agendar(draggedAluna.id, dia, horario);
-                            mostrarToast(`${draggedAluna.nome} agendada às ${horario}!`, 'success');
-                            renderizarAgenda();
+                            await agendar(draggedAluna.id, dia, horario);
                             draggedAluna = null;
                         }
                     });
                     
-                    slots.appendChild(slot);
+                    slot.addEventListener('click', async () => {
+                        if (selectedAluna) {
+                            await agendar(selectedAluna.id, dia, horario);
+                            selectedAluna = null;
+                            renderizarAlunas();
+                        }
+                    });
+
+                    slotsDiv.appendChild(slot);
                 });
-                
-                coluna.appendChild(slots);
                 scheduleGrid.appendChild(coluna);
             });
         }
 
-        function obterAlunaAgendada(dia, horario) {
-            const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
-            if (!agendamento) return null;
-            return alunas.find(a => a.id === agendamento.alunaId);
-        }
-
-        function agendar(alunaId, dia, horario) {
-            const jaAgendada = agendamentos.some(
-                a => a.alunaId === alunaId && a.dia === dia && a.horario === horario
-            );
+        async function agendar(alunaId, dia, horario) {
+            const existente = agendamentos.find(a => a.dia === dia && a.horario === horario);
+            if (existente) await deleteDoc(doc(db, "agendamentos", existente.id));
             
-            if (!jaAgendada) {
-                agendamentos.push({ alunaId, dia, horario });
-                salvarDados();
-            }
-        }
-
-        function desagendar(alunaId, dia, horario) {
-            agendamentos = agendamentos.filter(
-                a => !(a.alunaId === alunaId && a.dia === dia && a.horario === horario)
-            );
-            salvarDados();
+            await addDoc(collection(db, "agendamentos"), { alunaId, dia, horario });
+            mostrarToast('Agendado com sucesso!', 'success');
         }
 
         function exportarAgenda() {
@@ -787,9 +806,10 @@
             
             DIAS.forEach(dia => {
                 HORARIOS.forEach(horario => {
-                    const aluna = obterAlunaAgendada(dia, horario);
+                    const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
+                    const aluna = agendamento ? alunas.find(al => al.id === agendamento.alunaId) : null;
                     if (aluna) {
-                        csv += `${dia},${horario},"${aluna.nome}","${aluna.telefone}"\n`;
+                        csv += `${dia},${horario},"${aluna.nome}","${aluna.telefone || ''}"\n`;
                         total++;
                     }
                 });
@@ -806,7 +826,7 @@
             a.href = url;
             a.download = `agenda-${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
-            mostrarToast(`Agenda exportada com ${total} agendamentos!`, 'success');
+            mostrarToast(`Agenda exportada!`, 'success');
         }
 
         function mostrarToast(mensagem, tipo) {
@@ -816,12 +836,12 @@
             document.body.appendChild(toast);
             
             setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
             }, 3000);
         }
 
-        // Iniciar
         init();
     </script>
 </body>
