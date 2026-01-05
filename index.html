@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda Personal Trainer</title>
+    <title>Agenda Personal Trainer Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sonner@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
             margin: 0;
@@ -172,11 +173,16 @@
             margin-bottom: 8px;
             border-left: 4px solid;
             transition: all 0.2s;
-            cursor: move;
+            cursor: pointer;
         }
         
         .aluna-item:hover {
             background: #f3f4f6;
+        }
+        
+        .aluna-item.selected {
+            background: #f0fdfa;
+            border-right: 2px solid #0d9488;
         }
         
         .aluna-info {
@@ -212,6 +218,9 @@
             color: #6b7280;
             transition: all 0.2s;
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .btn-icon:hover {
@@ -256,6 +265,9 @@
             color: white;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .toggle-btn:hover {
@@ -294,11 +306,14 @@
             overflow: hidden;
             border: 1px solid #e2e8f0;
             transition: all 0.3s;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
         }
         
         .day-column:hover {
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transform: scale(1.02);
+            transform: scale(1.01);
         }
         
         .day-header {
@@ -310,58 +325,45 @@
         }
         
         .day-slots {
-            padding: 8px;
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
-        }
-        
-        .time-slot {
             padding: 12px;
-            border: 2px dashed #d1d5db;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .agendamento-card {
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 8px;
-            min-height: 80px;
-            transition: all 0.2s;
-            cursor: pointer;
-            background: #f9fafb;
-            position: relative;
-        }
-        
-        .time-slot:hover {
-            border-color: #0d9488;
-            background: #f0fdfa;
-        }
-        
-        .time-slot.occupied {
-            border-style: solid;
-            background: transparent;
-        }
-        
-        .time-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-        
-        .aluna-card {
-            padding: 8px;
-            border-radius: 6px;
             color: white;
-            font-size: 13px;
-            font-weight: 600;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             transition: all 0.2s;
+            position: relative;
         }
         
-        .aluna-card:hover {
+        .agendamento-card:hover {
+            transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
-        .aluna-card span {
+        .agendamento-time {
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(0,0,0,0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .agendamento-name {
+            font-size: 14px;
+            font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -372,6 +374,7 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 4px;
+            gap: 4px;
         }
 
         .remove-btn {
@@ -379,18 +382,38 @@
             border: none;
             color: white;
             cursor: pointer;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            opacity: 0.8;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
         
         .remove-btn:hover {
-            opacity: 1;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .swap-btn {
+            background: rgba(0,0,0,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .swap-btn:hover {
             background: rgba(0,0,0,0.4);
         }
 
@@ -398,25 +421,28 @@
             background: #25D366;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
+            border-radius: 6px;
+            padding: 4px 10px;
             font-size: 11px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             font-weight: bold;
+            transition: all 0.2s;
         }
 
         .whatsapp-btn:hover {
             background: #128C7E;
+            transform: scale(1.05);
         }
 
         .empty-text {
             font-size: 12px;
             color: #9ca3af;
             text-align: center;
-            margin-top: 8px;
+            margin-top: 20px;
+            font-style: italic;
         }
 
         .toast {
@@ -428,9 +454,42 @@
             color: white;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .toast.success { background: #0d9488; }
         .toast.error { background: #dc2626; }
+
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
 
         .overlay {
             display: none;
@@ -441,6 +500,38 @@
             height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 40;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
         }
 
         @media (max-width: 768px) {
@@ -457,11 +548,13 @@
             }
             .header-title h2 { font-size: 18px; }
             .schedule-container { padding: 12px; }
+            .schedule-grid { min-width: 1200px; }
         }
     </style>
 </head>
 <body>
     <div class="container-main">
+        <!-- Sidebar -->
         <aside id="sidebar" class="sidebar closed">
             <div class="sidebar-header">
                 <h1>Cadastro</h1>
@@ -480,24 +573,33 @@
                     <label>Cor de Identificação</label>
                     <div id="colorPicker" class="color-picker"></div>
                 </div>
-                <button id="btnAdicionar" class="btn btn-primary">➕ Adicionar Aluna</button>
+                <button id="btnAdicionar" class="btn btn-primary">➕ Salvar Aluna</button>
                 <button id="btnCancelar" class="btn btn-secondary mt-2" style="display: none;">❌ Cancelar Edição</button>
-                <button id="btnExportar" class="btn btn-secondary mt-4">📥 Exportar Agenda (CSV)</button>
                 
                 <div class="alunas-list">
                     <h2>Minhas Alunas</h2>
                     <div id="listaAlunas"></div>
                 </div>
             </div>
+            <div class="sidebar-footer">
+                <button id="btnExportar" class="btn btn-secondary">📥 Exportar Agenda (CSV)</button>
+            </div>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
             <div id="overlay" class="overlay"></div>
             <header class="header">
-                <button id="toggleSidebar" class="toggle-btn">☰</button>
+                <button id="toggleSidebar" class="toggle-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
                 <div class="header-title">
                     <h2>Agenda Personal Trainer</h2>
-                    <p>Controle de horários e alunas</p>
+                    <p>Controle de horários flexíveis</p>
                 </div>
             </header>
 
@@ -509,10 +611,55 @@
         </main>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    <!-- Modal de Horário -->
+    <div id="modalHorario" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Novo Agendamento
+            </div>
+            <p id="modalInfo" style="font-size: 14px; color: #6b7280; margin-bottom: 16px;"></p>
+            <div class="form-group">
+                <label>Horário da Aula</label>
+                <input type="time" id="inputHora">
+            </div>
+            <div class="modal-buttons">
+                <button id="btnConfirmarAgendamento" class="btn btn-primary">Confirmar</button>
+                <button id="btnFecharModal" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Modal de Troca de Aluno -->
+    <div id="modalTroca" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+                Trocar Aluno
+            </div>
+            <p id="trocaInfo" style="font-size: 14px; color: #6b7280; margin-bottom: 16px;"></p>
+            <select id="selectAlunoTroca" class="modal-select">
+                <option value="">Selecione um aluno...</option>
+            </select>
+            <div class="modal-buttons">
+                <button id="btnConfirmarTroca" class="btn btn-primary">Confirmar Troca</button>
+                <button id="btnFecharTroca" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Importações Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // Configuração Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDaPY_nrtvkBeQiVOTkrCPQjg_469wPos4",
             authDomain: "agendapersonal-930fe.firebaseapp.com",
@@ -525,17 +672,20 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Constantes
         const CORES = ['#1e3a8a', '#0d9488', '#dc2626', '#9333ea', '#f59e0b', '#06b6d4', '#8b5cf6', '#ec4899'];
         const DIAS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-        const HORARIOS = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
 
+        // Estado
         let alunas = [];
         let agendamentos = [];
         let alunaEmEdicao = null;
-        let draggedAluna = null;
         let selectedAluna = null;
         let corSelecionada = 0;
+        let diaSelecionado = null;
+        let agendamentoParaTroca = null;
 
+        // DOM Elements
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
         const toggleBtn = document.getElementById('toggleSidebar');
@@ -547,8 +697,11 @@
         const listaAlunas = document.getElementById('listaAlunas');
         const scheduleGrid = document.getElementById('scheduleGrid');
         const colorPicker = document.getElementById('colorPicker');
+        const modalHorario = document.getElementById('modalHorario');
+        const modalTroca = document.getElementById('modalTroca');
+        const inputHora = document.getElementById('inputHora');
 
-        // Sincronização em tempo real com Firebase
+        // Firebase Listeners
         onSnapshot(collection(db, "alunas"), (snapshot) => {
             alunas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderizarAlunas();
@@ -560,26 +713,34 @@
             renderizarAgenda();
         });
 
+        // Inicialização
         function init() {
             criarColorPicker();
             
-            toggleBtn.addEventListener('click', () => {
+            toggleBtn.onclick = () => {
                 sidebar.classList.toggle('closed');
-                overlay.style.display = sidebar.classList.contains('closed') ? 'none' : 'block';
-            });
+                overlay.classList.toggle('active');
+            };
 
-            overlay.addEventListener('click', () => {
+            overlay.onclick = () => {
                 sidebar.classList.add('closed');
-                overlay.style.display = 'none';
-            });
+                overlay.classList.remove('active');
+            };
             
-            btnAdicionar.addEventListener('click', adicionarAluna);
-            btnCancelar.addEventListener('click', cancelarEdicao);
-            btnExportar.addEventListener('click', exportarAgenda);
+            btnAdicionar.onclick = adicionarAluna;
+            btnCancelar.onclick = cancelarEdicao;
+            btnExportar.onclick = exportarAgenda;
             
+            document.getElementById('btnFecharModal').onclick = () => modalHorario.classList.remove('active');
+            document.getElementById('btnConfirmarAgendamento').onclick = confirmarAgendamento;
+            document.getElementById('btnFecharTroca').onclick = () => modalTroca.classList.remove('active');
+            document.getElementById('btnConfirmarTroca').onclick = confirmarTroca;
+
             nomeInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') adicionarAluna();
             });
+
+            lucide.createIcons();
         }
 
         function criarColorPicker() {
@@ -588,22 +749,19 @@
                 btn.className = 'color-btn';
                 btn.style.backgroundColor = cor;
                 if (idx === 0) btn.classList.add('selected');
-                btn.addEventListener('click', () => {
+                btn.onclick = () => {
                     document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
                     corSelecionada = idx;
-                });
+                };
                 colorPicker.appendChild(btn);
             });
         }
 
         async function adicionarAluna() {
             const nome = nomeInput.value.trim();
-            if (!nome) {
-                mostrarToast('Digite o nome da aluna', 'error');
-                return;
-            }
-
+            if (!nome) return mostrarToast('Digite o nome da aluna', 'error');
+            
             const dados = {
                 nome: nome,
                 telefone: telefoneInput.value,
@@ -617,17 +775,15 @@
                     mostrarToast('Aluna atualizada!', 'success');
                 } else {
                     await addDoc(collection(db, "alunas"), dados);
-                    mostrarToast('Aluna adicionada!', 'success');
+                    mostrarToast('Aluna cadastrada!', 'success');
                 }
-
+                
                 nomeInput.value = '';
                 telefoneInput.value = '';
-                corSelecionada = 0;
                 btnCancelar.style.display = 'none';
-                btnAdicionar.textContent = '➕ Adicionar Aluna';
-                document.querySelectorAll('.color-btn').forEach((b, i) => b.classList.toggle('selected', i === 0));
+                btnAdicionar.textContent = '➕ Salvar Aluna';
             } catch (e) {
-                mostrarToast('Erro ao salvar!', 'error');
+                mostrarToast('Erro ao salvar', 'error');
             }
         }
 
@@ -635,82 +791,62 @@
             alunaEmEdicao = null;
             nomeInput.value = '';
             telefoneInput.value = '';
-            corSelecionada = 0;
             btnCancelar.style.display = 'none';
-            btnAdicionar.textContent = '➕ Adicionar Aluna';
-        }
-
-        function editarAluna(aluna) {
-            alunaEmEdicao = aluna;
-            nomeInput.value = aluna.nome;
-            telefoneInput.value = aluna.telefone || '';
-            corSelecionada = CORES.indexOf(aluna.cor);
-            document.querySelectorAll('.color-btn').forEach((btn, idx) => {
-                btn.classList.toggle('selected', idx === corSelecionada);
-            });
-            btnCancelar.style.display = 'flex';
-            btnAdicionar.textContent = '✏️ Atualizar Aluna';
-            sidebar.classList.remove('closed');
-            overlay.style.display = 'block';
-            nomeInput.focus();
-        }
-
-        async function removerAluna(id) {
-            if (confirm(`Deseja remover esta aluna? Todos os agendamentos dela também serão excluídos.`)) {
-                try {
-                    await deleteDoc(doc(db, "alunas", id));
-                    // Remover agendamentos vinculados
-                    const vinculados = agendamentos.filter(a => a.alunaId === id);
-                    for (const v of vinculados) {
-                        await deleteDoc(doc(db, "agendamentos", v.id));
-                    }
-                    mostrarToast('Aluna removida!', 'success');
-                } catch (e) {
-                    mostrarToast('Erro ao remover!', 'error');
-                }
-            }
+            btnAdicionar.textContent = '➕ Salvar Aluna';
         }
 
         function renderizarAlunas() {
-            listaAlunas.innerHTML = '';
-            if (alunas.length === 0) {
-                listaAlunas.innerHTML = '<p class="empty-text">Nenhuma aluna cadastrada</p>';
-                return;
-            }
-
+            listaAlunas.innerHTML = alunas.length ? '' : '<p class="empty-text">Nenhuma aluna cadastrada</p>';
             alunas.forEach(aluna => {
                 const item = document.createElement('div');
-                item.className = `aluna-item ${selectedAluna?.id === aluna.id ? 'ring-2 ring-teal-500' : ''}`;
+                item.className = `aluna-item ${selectedAluna?.id === aluna.id ? 'selected' : ''}`;
                 item.style.borderLeftColor = aluna.cor;
-                item.draggable = true;
-                
                 item.innerHTML = `
                     <div class="aluna-info">
                         <div class="aluna-name">${aluna.nome}</div>
                         <div class="aluna-phone">${aluna.telefone || 'Sem telefone'}</div>
                     </div>
                     <div class="aluna-actions">
-                        <button class="btn-icon edit" title="Editar">✏️</button>
-                        <button class="btn-icon delete" title="Remover">🗑️</button>
+                        <button class="btn-icon edit" title="Editar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button class="btn-icon delete" title="Deletar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </button>
                     </div>
                 `;
                 
-                item.querySelector('.edit').addEventListener('click', (e) => {
+                item.querySelector('.edit').onclick = (e) => {
                     e.stopPropagation();
-                    editarAluna(aluna);
-                });
-                item.querySelector('.delete').addEventListener('click', (e) => {
+                    alunaEmEdicao = aluna;
+                    nomeInput.value = aluna.nome;
+                    telefoneInput.value = aluna.telefone || '';
+                    corSelecionada = CORES.indexOf(aluna.cor);
+                    document.querySelectorAll('.color-btn').forEach((b, i) => b.classList.toggle('selected', i === corSelecionada));
+                    btnCancelar.style.display = 'flex';
+                    btnAdicionar.textContent = '✏️ Atualizar Aluna';
+                    sidebar.classList.remove('closed');
+                    overlay.classList.add('active');
+                };
+                
+                item.querySelector('.delete').onclick = async (e) => {
                     e.stopPropagation();
-                    removerAluna(aluna.id);
-                });
+                    if(confirm(`Remover ${aluna.nome}?`)) await deleteDoc(doc(db, "alunas", aluna.id));
+                };
                 
-                item.addEventListener('dragstart', () => draggedAluna = aluna);
-                
-                item.addEventListener('click', () => {
+                item.onclick = () => {
                     selectedAluna = aluna;
-                    mostrarToast(`Selecionada: ${aluna.nome}. Toque num horário.`, 'success');
+                    mostrarToast(`Selecionada: ${aluna.nome}. Toque no dia da agenda.`, 'success');
                     renderizarAlunas();
-                });
+                };
                 
                 listaAlunas.appendChild(item);
             });
@@ -724,124 +860,187 @@
                 coluna.innerHTML = `<div class="day-header">${dia}</div><div class="day-slots"></div>`;
                 const slotsDiv = coluna.querySelector('.day-slots');
                 
-                HORARIOS.forEach(horario => {
-                    const slot = document.createElement('div');
-                    slot.className = 'time-slot';
-                    slot.innerHTML = `<div class="time-label">${horario}</div>`;
-                    
-                    const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
-                    const aluna = agendamento ? alunas.find(a => a.id === agendamento.alunaId) : null;
-                    
-                    if (aluna) {
-                        slot.classList.add('occupied');
-                        slot.style.backgroundColor = aluna.cor + '15';
-                        slot.style.borderColor = aluna.cor;
-                        
-                        const card = document.createElement('div');
-                        card.className = 'aluna-card';
-                        card.style.backgroundColor = aluna.cor;
-                        card.innerHTML = `
-                            <span>${aluna.nome}</span>
-                            <div class="card-actions">
-                                <button class="whatsapp-btn" title="Enviar Lembrete">
-                                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.319 1.592 5.448 0 9.886-4.438 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.735-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                                    Avisar
-                                </button>
-                                <button class="remove-btn">✕</button>
-                            </div>
-                        `;
-                        
-                        card.querySelector('.remove-btn').onclick = async (e) => {
-                            e.stopPropagation();
-                            await deleteDoc(doc(db, "agendamentos", agendamento.id));
-                            mostrarToast('Agendamento removido!', 'success');
-                        };
-                        
-                        card.querySelector('.whatsapp-btn').onclick = (e) => {
-                            e.stopPropagation();
-                            const tel = aluna.telefone ? aluna.telefone.replace(/\D/g, '') : '';
-                            if(!tel) return mostrarToast('Aluna sem telefone!', 'error');
-                            const msg = encodeURIComponent(`Olá ${aluna.nome}, passando para lembrar da nossa aula de ${dia} às ${horario}. Até lá! 🏋️‍♀️`);
-                            window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
-                        };
-                        
-                        slot.appendChild(card);
-                    } else {
-                        slot.innerHTML += '<div class="empty-text">Vazio</div>';
-                    }
+                const agendamentosDia = agendamentos
+                    .filter(a => a.dia === dia)
+                    .sort((a, b) => a.horario.localeCompare(b.horario));
 
-                    slot.addEventListener('dragover', (e) => e.preventDefault());
-                    slot.addEventListener('drop', async () => {
-                        if (draggedAluna) {
-                            await agendar(draggedAluna.id, dia, horario);
-                            draggedAluna = null;
-                        }
-                    });
-                    
-                    slot.addEventListener('click', async () => {
-                        if (selectedAluna) {
-                            await agendar(selectedAluna.id, dia, horario);
-                            selectedAluna = null;
-                            renderizarAlunas();
-                        }
-                    });
+                if (agendamentosDia.length === 0) {
+                    slotsDiv.innerHTML = '<p class="empty-text">Sem aulas</p>';
+                }
 
-                    slotsDiv.appendChild(slot);
+                agendamentosDia.forEach(ag => {
+                    const aluna = alunas.find(al => al.id === ag.alunaId);
+                    if (!aluna) return;
+
+                    const card = document.createElement('div');
+                    card.className = 'agendamento-card';
+                    card.style.backgroundColor = aluna.cor;
+                    card.innerHTML = `
+                        <div class="agendamento-time">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            ${ag.horario}
+                        </div>
+                        <div class="agendamento-name">${aluna.nome}</div>
+                        <div class="card-actions">
+                            <button class="swap-btn" title="Trocar aluno">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <polyline points="19 12 12 19 5 12"></polyline>
+                                </svg>
+                                Trocar
+                            </button>
+
+                            <button class="whatsapp-btn">Avisar</button>
+
+                            <button class="remove-btn" title="Remover aula">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    
+                    card.querySelector('.swap-btn').onclick = () => {
+                        agendamentoParaTroca = ag;
+                        document.getElementById('trocaInfo').textContent = `Trocar ${aluna.nome} por:`;
+                        
+                        const select = document.getElementById('selectAlunoTroca');
+                        select.innerHTML = '<option value="">Selecione um aluno...</option>';
+                        alunas.filter(a => a.id !== ag.alunaId).forEach(a => {
+                            const option = document.createElement('option');
+                            option.value = a.id;
+                            option.textContent = a.nome;
+                            select.appendChild(option);
+                        });
+                        
+                        modalTroca.classList.add('active');
+                    };
+                    
+
+
+card.querySelector('.whatsapp-btn').onclick = (e) => {
+                        e.stopPropagation();
+                        const tel = aluna.telefone ? aluna.telefone.replace(/\D/g, '') : '';
+                        if(!tel) return mostrarToast('Aluna sem telefone!', 'error');
+                        const msg = encodeURIComponent(`Olá ${aluna.nome}, passando para lembrar da nossa aula de ${dia} às ${ag.horario}. Até lá! 🏋️‍♀️`);
+                        window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
+                    };
+
+
+
+
+                    card.querySelector('.remove-btn').onclick = async () => {
+                        if(confirm("Remover esta aula?")) {
+                            await deleteDoc(doc(db, "agendamentos", ag.id));
+                        }
+                    };
+                    
+                    slotsDiv.appendChild(card);
                 });
+
+                slotsDiv.onclick = (e) => {
+                    if (e.target === slotsDiv || e.target.classList.contains('empty-text')) {
+                        if (!selectedAluna) {
+                            mostrarToast('Selecione uma aluna primeiro', 'error');
+                            return;
+                        }
+                        diaSelecionado = dia;
+                        document.getElementById('modalInfo').textContent = `${selectedAluna.nome} - ${dia}`;
+                        inputHora.value = '';
+                        modalHorario.classList.add('active');
+                    }
+                };
+
                 scheduleGrid.appendChild(coluna);
             });
         }
 
-        async function agendar(alunaId, dia, horario) {
-            const existente = agendamentos.find(a => a.dia === dia && a.horario === horario);
-            if (existente) await deleteDoc(doc(db, "agendamentos", existente.id));
-            
-            await addDoc(collection(db, "agendamentos"), { alunaId, dia, horario });
-            mostrarToast('Agendado com sucesso!', 'success');
+        async function confirmarAgendamento() {
+            if (!inputHora.value) {
+                mostrarToast('Digite o horário', 'error');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "agendamentos"), {
+                    alunaId: selectedAluna.id,
+                    dia: diaSelecionado,
+                    horario: inputHora.value
+                });
+                mostrarToast('Aula agendada!', 'success');
+                modalHorario.classList.remove('active');
+            } catch (e) {
+                mostrarToast('Erro ao agendar', 'error');
+            }
+        }
+
+        async function confirmarTroca() {
+            const selectTroca = document.getElementById('selectAlunoTroca');
+            const novoAlunoId = selectTroca.value;
+
+            if (!novoAlunoId) {
+                mostrarToast('Selecione um aluno', 'error');
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, "agendamentos", agendamentoParaTroca.id), {
+                    alunaId: novoAlunoId
+                });
+                mostrarToast('Aluno trocado com sucesso!', 'success');
+                modalTroca.classList.remove('active');
+                agendamentoParaTroca = null;
+            } catch (e) {
+                mostrarToast('Erro ao trocar aluno', 'error');
+            }
         }
 
         function exportarAgenda() {
-            let csv = 'Dia,Horário,Aluna,Telefone\n';
-            let total = 0;
-            
+            const headers = ["Dia", "Horário", "Aluna", "Telefone"];
+            const rows = [];
+
             DIAS.forEach(dia => {
-                HORARIOS.forEach(horario => {
-                    const agendamento = agendamentos.find(a => a.dia === dia && a.horario === horario);
-                    const aluna = agendamento ? alunas.find(al => al.id === agendamento.alunaId) : null;
-                    if (aluna) {
-                        csv += `${dia},${horario},"${aluna.nome}","${aluna.telefone || ''}"\n`;
-                        total++;
-                    }
+                const agendasDia = agendamentos.filter(a => a.dia === dia).sort((a, b) => a.horario.localeCompare(b.horario));
+                agendasDia.forEach(ag => {
+                    const aluna = alunas.find(a => a.id === ag.alunaId);
+                    rows.push([dia, ag.horario, aluna?.nome || "", aluna?.telefone || ""]);
                 });
             });
-            
-            if (total === 0) {
-                mostrarToast('Nenhum agendamento para exportar', 'error');
-                return;
-            }
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `agenda-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            mostrarToast(`Agenda exportada!`, 'success');
+
+            const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `agenda-${new Date().toISOString().split("T")[0]}.csv`);
+            link.style.visibility = "hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            mostrarToast('Agenda exportada!', 'success');
         }
 
         function mostrarToast(mensagem, tipo) {
             const toast = document.createElement('div');
             toast.className = `toast ${tipo}`;
-            toast.textContent = mensagem;
+            toast.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    ${tipo === 'success' 
+                        ? '<polyline points="20 6 9 17 4 12"></polyline>'
+                        : '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>'
+                    }
+                </svg>
+                ${mensagem}
+            `;
             document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            setTimeout(() => toast.remove(), 3000);
         }
 
+        // Iniciar
         init();
     </script>
 </body>
